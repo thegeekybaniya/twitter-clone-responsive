@@ -1,14 +1,6 @@
-import React, { createContext } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableWithoutFeedback,
-  ScrollView,
-  Dimensions,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { Header, Icon, Text, Button } from "react-native-elements";
+import React, { createContext, useContext } from "react";
+import { Dimensions, Image, ScrollView, StyleSheet, View } from "react-native";
+import { Button, Icon, Text } from "react-native-elements";
 const { width, height } = Dimensions.get("window");
 const AppContext = createContext({ isWide: false });
 
@@ -18,7 +10,7 @@ export default class App extends React.Component {
   };
   render() {
     return (
-      <AppContext.Provider value={this.state}>
+      <AppContext.Provider context={this.state}>
         <View style={styles.container} onLayout={this._handleLayout}>
           <View style={{ flex: 2, flexGrow: 2.5, height: "100%" }}>
             <LeftComponent />
@@ -26,9 +18,11 @@ export default class App extends React.Component {
           <View style={{ flex: 5.5, height: "100%" }}>
             <CenterComponent />
           </View>
-          <View style={{ flex: 2.5, height: "100%" }}>
-            <RightComponent />
-          </View>
+          {this.state.isWide && (
+            <View style={{ flex: 2.5, height: "100%" }}>
+              <RightComponent />
+            </View>
+          )}
         </View>
       </AppContext.Provider>
     );
@@ -37,7 +31,7 @@ export default class App extends React.Component {
   _handleLayout = ({ nativeEvent }) => {
     const { width } = nativeEvent.layout;
     console.log("Hila", this.state.isWide, width);
-    this.setState({ isWide: width > 600 });
+    this.setState({ isWide: width > 800 });
   };
 }
 
@@ -117,7 +111,7 @@ function Home() {
         <View style={{ flex: 1.5, alignContent: "center" }}>
           <Image
             source={require("./assets/profile.png")}
-            style={{ height: 80, width: 80 }}
+            style={{ height: "60%", aspectRatio: 1, resizeMode: "contain" }}
           />
         </View>
         <View style={{ flex: 8 }}>
@@ -216,6 +210,8 @@ function CenterComponent() {
 }
 
 function LeftComponent() {
+  const context = useContext(AppContext);
+  console.log(context);
   return (
     <View style={{ marginHorizontal: 25, marginVertical: 10 }}>
       <Image
@@ -240,11 +236,20 @@ function LeftComponent() {
                 type={item.iconFamily}
               />
             </View>
-            <Text style={styles.headerText}>{item.name}</Text>
+            {context.isWide && <Text style={styles.headerText}>{item.name}</Text>}
           </View>
         );
       })}
-      <TweetButton />
+      {context.isWide ? (
+        <TweetButton />
+      ) : (
+        <Icon
+          reverse
+          name="feather"
+          type="material-community"
+          color="#2089dc"
+        />
+      )}
     </View>
   );
 }
