@@ -1,6 +1,14 @@
 import React, { createContext, useContext } from "react";
-import { Dimensions, Image, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Icon, Text } from "react-native-elements";
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableWithoutFeedback,
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Header, Icon, Text, Button } from "react-native-elements";
 const { width, height } = Dimensions.get("window");
 const AppContext = createContext({ isWide: false });
 
@@ -10,7 +18,7 @@ export default class App extends React.Component {
   };
   render() {
     return (
-      <AppContext.Provider context={this.state}>
+      <AppContext.Provider value={this.state}>
         <View style={styles.container} onLayout={this._handleLayout}>
           <View style={{ flex: 2, flexGrow: 2.5, height: "100%" }}>
             <LeftComponent />
@@ -210,8 +218,8 @@ function CenterComponent() {
 }
 
 function LeftComponent() {
-  const context = useContext(AppContext);
-  console.log(context);
+  const value = useContext(AppContext);
+  console.log(value);
   return (
     <View style={{ marginHorizontal: 25, marginVertical: 10 }}>
       <Image
@@ -236,11 +244,11 @@ function LeftComponent() {
                 type={item.iconFamily}
               />
             </View>
-            {context.isWide && <Text style={styles.headerText}>{item.name}</Text>}
+            {value.isWide && <Text style={styles.headerText}>{item.name}</Text>}
           </View>
         );
       })}
-      {context.isWide ? (
+      {value.isWide ? (
         <TweetButton />
       ) : (
         <Icon
@@ -331,7 +339,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: "white",
-    fontFamily: "OdibeeSans",
     fontSize: 25,
     margin: 10,
     textAlign: "center",
